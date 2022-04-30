@@ -1,0 +1,512 @@
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+enough_food <- function(d, cmax, a, q, x, t, fk, T){
+if (is.na(memo[t,x+1]) == F){
+return(memo[t,x+1])
+}
+else if (x + 1 > fk){
+memo[t,x+1] <<-
+(1 - fail(d, cmax, a, q)) * enough_food(d, cmax, a, q, 0, t + 1, fk, T)
+return(memo[t,x+1])
+}
+else{
+memo[t,x+1] <<-
+fail(d, cmax, a, q) * enough_food(d, cmax, a, q, x + 1, t + 1, fk, T) +
+(1 - fail(d, cmax, a, q)) * enough_food(d, cmax, a, q, 0, t + 1, fk, T)
+return(memo[t,x+1])
+}
+}
+View(memo)
+rm(list=ls())
+# duration
+T <- 180
+# hours of hunting/day
+q <- 12
+# max fasting periods
+fk <- 12
+fs <- 6
+# max prey capture prob
+cmax <- 0.9
+# distance where capture prob = cmax/2
+d_chalf <- 10
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+enough_food <- function(d, cmax, a, q, x, t, fk, T){
+if (is.na(memo[t,x+1]) == F){
+return(memo[t,x+1])
+}
+else if (x + 1 > fk){
+memo[t,x+1] <<-
+(1 - fail(d, cmax, a, q)) * enough_food(d, cmax, a, q, 0, t + 1, fk, T)
+return(memo[t,x+1])
+}
+else{
+memo[t,x+1] <<-
+fail(d, cmax, a, q) * enough_food(d, cmax, a, q, x + 1, t + 1, fk, T) +
+(1 - fail(d, cmax, a, q)) * enough_food(d, cmax, a, q, 0, t + 1, fk, T)
+return(memo[t,x+1])
+}
+}
+enough_food(d, cmax, a, q, x, 1, fk, T)
+enough_food_dp_back(d, cmax, a, q, x, 1, fk, T)
+rm(list=ls())
+# duration
+T <- 180
+# hours of hunting/day
+q <- 12
+# max fasting periods
+fk <- 12
+fs <- 6
+# max prey capture prob
+cmax <- 0.9
+# distance where capture prob = cmax/2
+d_chalf <- 10
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+rec <- function(d, cmax, a, q, x, t, fk, T, memo){
+if (is.na(memo[t,x+1]) == F){
+}
+else if (x + 1 > fk){
+memo[t,x+1] <-
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+else{
+memo[t,x+1] <-
+fail(d, cmax, a, q) * rec(d, cmax, a, q, x + 1, t + 1, fk, T, memo)[t+1,x+2] +
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+return(memo)
+}
+enough_food_dp_back <- function(d, cmax, a, q, x, t, fk, T){
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+rec(d, cmax, a, q, x, t, fk, T, memo)[t,x+1]
+}
+enough_food_dp_back(d, cmax, a, q, x, 1, fk, T)
+rm(list=ls())
+# duration
+T <- 180
+# hours of hunting/day
+q <- 12
+# max fasting periods
+fk <- 12
+fs <- 6
+# max prey capture prob
+cmax <- 0.9
+# distance where capture prob = cmax/2
+d_chalf <- 10
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+rec <- function(d, cmax, a, q, x, t, fk, T, memo){
+if (is.na(memo[t,x+1]) == F){
+}
+else if (x + 1 > fk){
+memo[t,x+1] <-
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+else{
+memo[t,x+1] <-
+fail(d, cmax, a, q) * rec(d, cmax, a, q, x + 1, t + 1, fk, T, memo)[t+1,x+2] +
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+return(memo)
+}
+enough_food_dp_back <- function(d, cmax, a, q, x, t, fk, T){
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+rec(d, cmax, a, q, x, t, fk, T, memo)
+}
+enough_food_dp_back(d, cmax, a, q, x, 1, fk, T)
+enough_food_dp_back(d, cmax, a, q, x, 1, 2, 10)
+enough_food_fw_req(d, cmax, a, q, x, 1, 2, 10)
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+View(memo)
+rm(list=ls())
+# duration
+T <- 180
+# hours of hunting/day
+q <- 12
+# max fasting periods
+fk <- 12
+fs <- 6
+# max prey capture prob
+cmax <- 0.9
+# distance where capture prob = cmax/2
+d_chalf <- 10
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+rec <- function(d, cmax, a, q, x, t, fk, T, memo){
+if (is.na(memo[t,x+1]) == F){
+return(memo)
+}
+else if (x + 1 > fk){
+memo[t,x+1] <-
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+return(memo)
+}
+else{
+memo[t,x+1] <-
+fail(d, cmax, a, q) * rec(d, cmax, a, q, x + 1, t + 1, fk, T, memo)[t+1,x+2] +
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+return(memo)
+}
+}
+enough_food_dp_back <- function(d, cmax, a, q, x, t, fk, T){
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+rec(d, cmax, a, q, x, t, fk, T, memo)
+}
+enough_food_dp_back(d, cmax, a, q, x, 1, fk, T)
+enough_food_dp_back(d, cmax, a, q, x, 1, 2, 10)
+arr <-  matrix(nrow=2, ncol=2)
+foo <- function(x, memo){
+memo[2,2] <- 2
+}
+foo(3)
+foo(3, arr)
+arr <-  matrix(nrow=2, ncol=2)
+foo <- function(x, memo){
+memo[2,2] <- 2
+return(memo)
+}
+foo(3, arr)
+fk <- 2
+T <- 10
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+rm(list=ls())
+rm(list=ls())
+# duration
+T <- 180
+# hours of hunting/day
+q <- 12
+# max fasting periods
+fk <- 12
+fs <- 6
+# max prey capture prob
+cmax <- 0.9
+# distance where capture prob = cmax/2
+d_chalf <- 10
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+rec <- function(d, cmax, a, q, x, t, fk, T, memo){
+if (is.na(memo[t,x+1]) == F){
+}
+else if (x + 1 > fk){
+memo[t,x+1] <-
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+else{
+memo[t,x+1] <-
+fail(d, cmax, a, q) * rec(d, cmax, a, q, x + 1, t + 1, fk, T, memo)[t+1,x+2] +
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+return(memo)
+}
+fk <- 2
+T <- 10
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+View(memo)
+rec(d, cmax, a, q, x, t, fk, T, memo)
+arr <-  matrix(nrow=2, ncol=2)
+foo <- function(x, memo){
+memo[2,0+2] <- 2
+return(memo)
+}
+foo(3, arr)
+View(arr)
+enough_food_dp_back <- function(d, cmax, a, q, x, t, fk, T){
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+rec(d, cmax, a, q, x, t, fk, T, memo)
+}
+rm(list=ls())
+# duration
+T <- 180
+# hours of hunting/day
+q <- 12
+# max fasting periods
+fk <- 12
+fs <- 6
+# max prey capture prob
+cmax <- 0.9
+# distance where capture prob = cmax/2
+d_chalf <- 10
+#
+a <- 0.1
+#
+d <- 15
+#
+x <- 0
+# prob mortal injury/attack
+i <- 0.001
+# predators/prey
+r <- 0.05
+# max food encounter/hour
+fmax <- 0.3
+# distance where food encounter/hour = fmax/2
+d_fhalf <- 10
+# hours foraging lost for sea lions /attack
+h <- 2
+# orca
+# prob/attack
+capture <- function(d, cmax){
+cmax * (1 - 0.5**(d / d_chalf))
+}
+# prob/day
+fail <- function(d, cmax, a, q){
+exp(-capture(d, cmax) * a * q)
+}
+# with forward recursion
+enough_food_fw_req <- function(d, cmax, a, q, x, t, fk, T){
+if(t < T){
+if (x + 1 <= fk){
+fail(d, cmax, a, q) * enough_food_fw_req(d, cmax, a, q, x + 1, t + 1, fk, T) +
+((1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T))
+} else {(1 - fail(d, cmax, a, q)) * enough_food_fw_req(d, cmax, a, q, 0, t + 1, fk, T)}
+} else{1}
+}
+rec <- function(d, cmax, a, q, x, t, fk, T, memo){
+if (is.na(memo[t,x+1]) == F){
+}
+else if (x + 1 > fk){
+memo[t,x+1] <-
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+else{
+memo[t,x+1] <-
+fail(d, cmax, a, q) * rec(d, cmax, a, q, x + 1, t + 1, fk, T, memo)[t+1,x+2] +
+(1 - fail(d, cmax, a, q)) * rec(d, cmax, a, q, 0, t + 1, fk, T, memo)[t+1,0+1]
+}
+return(memo)
+}
+fk <- 2
+T <- 10
+memo <- matrix(nrow=T, ncol=fk+1)
+memo[T,] <- rep(1, fk+1)
+rec(d, cmax, a, q, x, 1, fk, T, memo)
+source("~/R/ecological_models/orca_sealion_v3.R")
+#  statistical analysis for bachelor thesis
+rm(list=ls())
+library(dplyr)
+library(ggplot2)
+library(haven)
+library(data.table)
+library(GGally)
+library(car)
+library(MuMIn)
+library(arm)
+library(ggpubr)
+library(reshape)
+setwd("~/R")
+# read data into R
+inveduc_data <- read_sav("inveduc_data")
+setwd("~Documents/R")
+setwd("~/Documents/R")
+rm(list=ls())
+setwd("~/R")
+# read data into R
+inveduc_data <- read_sav("inveduc_data")
+library(readr)
+# loading installed packages into library
+library(dplyr)
+library(readr)
+install.packages("readr")
