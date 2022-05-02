@@ -1,3 +1,4 @@
+### This script replicates the analysis of Wolf & Mangel, 2007 ###
 rm(list=ls())
 library(ggplot2)
 library(dplyr)
@@ -16,7 +17,8 @@ cmax <- 0.9
 d_chalf <- 10
 
 # will be varied later on
-a <- 0.1
+a <- 0.1 # true attacks
+a_false <- 0 # false attacks
 # will be varied later on
 d <- 15
 # hunger starting state
@@ -130,6 +132,7 @@ end_iter - start_iter
 ### final orca model ----
 # decision for iterative approach
 
+# survive season
 fit_orca <- function(d, cmax, d_chalf, a, q, x, t, fk, T, i){
   enough_food_dp_iter(d, cmax, d_chalf, a, q, x, t, fk, T) * exp(-a * i * q * T)
 }
@@ -165,36 +168,49 @@ enough_food_dp_iter_sea <- function(d, fmax, d_fhalf, a, q, x, t, fs, T){
   return(memo[1, x + 1])
 }
 
-fit_sea <- function(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r){
-  enough_food_dp_iter_sea(d, fmax, d_fhalf, a, q, x, t, fs, T) * 
+# also not die due to orca attack
+fit_sea <- function(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r, a_false){
+  enough_food_dp_iter_sea(d, fmax, d_fhalf, a + a_false, q, x, t, fs, T) * 
     exp(-capture(d, cmax, d_chalf) *a * r * q * T)
 }
 
-fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r)
+fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r, a_false)
 
 
 # model appliaction ----
+
+# setting the range of a & d params and how fine the grid should be (detail)
 detail <- 2
 maxd <- 35 * detail
 maxa <- 25 * detail
 divd <- detail
 diva <- 100 * detail
-
+# preparing df
 res <- data.frame(d = c(sapply(0:maxd/divd, function(y){
   rep(y, 25 * detail + 1)})) , a = rep(0:maxa/diva, 35 * detail + 1))
+# calculating fitness for different param values
 res$orca <- c(sapply(0:maxd/divd, function(d){
   sapply(0:maxa/diva, function(a){
     fit_orca(d, cmax, d_chalf, a, q, x, t, fk, T, i)})}))
 res$sealion <- c(sapply(0:maxd/divd, function(d){
   sapply(0:maxa/diva, function(a){
-    fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r)})}))
+    fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r, a_false)})}))
+# with false attacks
+res$sealion_0.1 <- c(sapply(0:maxd/divd, function(d){
+  sapply(0:maxa/diva, function(a){
+    fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r, 0.1)})}))
 
-# lapply(df1[,-c(1:2)], function(a) ave(a, df1$SiteID, FUN = max))
-# temp <- res
-# temp$orca <- ave(res$orca, as.factor(res$d), max)
-# temp <- res %>% group_by(d) %>% mutate_at(.vars = vars(-"a"), .funs = max)
-# mutate_at(.vars = vars("a"),.funs = list(~. * b))
+res$sealion_0.2 <- c(sapply(0:maxd/divd, function(d){
+  sapply(0:maxa/diva, function(a){
+    fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r, 0.2)})}))
 
+res$sealion_0.3 <- c(sapply(0:maxd/divd, function(d){
+  sapply(0:maxa/diva, function(a){
+    fit_sea(d, fmax, d_fhalf, a, q, x, t, fs, T, cmax, d_chalf, r, 0.3)})}))
+
+
+# plotting
+# orca
 temp <- res %>% group_by(d) %>% mutate_at(vars(-a), funs(max)) 
 df_aux <- temp[res$orca == temp$orca & res$orca != 0, 1:4]
 
@@ -203,15 +219,32 @@ ggplot(res, aes(x=d, y=a, fill=orca)) + geom_tile() +
   geom_line(data = df_aux, mapping = aes(x=d, y=a), colour = "black")
 
 
+# sea lion
 temp <- res %>% group_by(a) %>% mutate_at(vars(-d), funs(max)) 
-df_aux <- temp[res$sealion == temp$sealion & res$sealion != 0, 1:4]
+df_aux <- temp[res$sealion == temp$sealion & res$sealion != 0, ]
 
 ggplot(res, aes(x=a, y=d, fill=sealion)) + geom_tile()+
   scale_fill_gradient(low = "blue", high = "yellow")  +
   geom_line(data = df_aux, mapping = aes(x=a, y=d), colour = "black")
 
+# with false attacks of different rates
 
+# additional false attack rate = 0,1
+df_aux <- temp[res$sealion_0.1 == temp$sealion_0.1 & res$sealion_0.1 != 0, ]
+ggplot(res, aes(x=a, y=d, fill=sealion_0.1)) + geom_tile()+
+  scale_fill_gradient(low = "blue", high = "yellow")  +
+  geom_line(data = df_aux, mapping = aes(x=a, y=d), colour = "black")
 
+# 0.2
+df_aux <- temp[res$sealion_0.2 == temp$sealion_0.2 & res$sealion_0.2 != 0, ]
+ggplot(res, aes(x=a, y=d, fill=sealion_0.2)) + geom_tile()+
+  scale_fill_gradient(low = "blue", high = "yellow")  +
+  geom_line(data = df_aux, mapping = aes(x=a, y=d), colour = "black")
 
+# 0.3
+df_aux <- temp[res$sealion_0.3 == temp$sealion_0.3 & res$sealion_0.3 != 0, ]
+ggplot(res, aes(x=a, y=d, fill=sealion_0.3)) + geom_tile()+
+  scale_fill_gradient(low = "blue", high = "yellow")  +
+  geom_line(data = df_aux, mapping = aes(x=a, y=d), colour = "black")
 
 
