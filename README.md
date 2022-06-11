@@ -6,4 +6,6 @@ This repo contains ecological hunter-prey interaction models:
   * **sparrow_hawk_great_tit_attention_attack.R**:   
     Shows (similar to the orca-sealion model) that the more additional false attacks hawks fly, the more the great tits are forced to cut down on anti-predator behavior. The model splits the day into multiple time steps (eg. 12) and runs for x amount of days (eg. 180). It differs between light (hunting takes place) and night (no food but still metabolism costs) hours (night hours are half of the light hours).
   * **sparrow_hawk_great_tit_day_blocks.R**:  
-    Further developed "sparrow_hawk_great_tit_attention_attack.R", which includes that false attacks are only flown in specific light hours (blocks). The results show that false attacks flown in the morning force great tits to pay least attention (anti-predator behaviour), compared to false attacks at other times.
+    Further developed "sparrow_hawk_great_tit_attention_attack.R", which now includes that false attacks are only flown in specific light hours (blocks). The results show that false attacks flown in the morning force great tits to pay least attention (anti-predator behaviour), compared to false attacks at other times.
+  * **sparrow_hawk_great_tit_indep_a_afalse.R**:  
+    Further developed "sparrow_hawk_great_tit_day_blocks.R", which now includes costs for flying false attacks for hawks and a and that false attacks and real attack rates can be set independently of each other.
